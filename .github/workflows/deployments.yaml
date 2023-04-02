@@ -27,36 +27,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Build, tag and push image to Amazon ECR
-      #   id: build-image
-      #   env:
-      #     IMAGE_TAG: ${{ github.sha }}
-      #   run: |
-      #     aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
-      #     docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
-      #     docker tag $AWS_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG
-      #     docker push ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG
-      #     echo "::set-output name=image::${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG"
+      - name: Build, tag and push image to Amazon ECR
+        id: build-image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
+          docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
+          docker tag $AWS_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG
+          docker push ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:$IMAGE_TAG"
       
-      # - name: Download task definiton
-      #   run: |
-      #     aws ecs describe-task-definition --task-definition helloworldtask \
-      #     --query taskDefinition > task-definition.json
+      - name: Download task definiton
+        run: |
+          aws ecs describe-task-definition --task-definition helloworldtask \
+          --query taskDefinition > task-definition.json
 
-      # - name: Update task-definition.json
-      #   run: echo "`jq '.containerDefinitions[0].image="${{ steps.build-image.outputs.image }}"' task-definition.json`" > task-definition.json
+      - name: Update task-definition.json
+        run: echo "`jq '.containerDefinitions[0].image="${{ steps.build-image.outputs.image }}"' task-definition.json`" > task-definition.json
 
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      #   with:
-      #     task-definition: task-definition.json
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
 
-      # - name: Force redeploy
-      #   run: |
-      #     aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment 
+      - name: Force redeploy
+        run: |
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment 
