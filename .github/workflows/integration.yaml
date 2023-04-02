@@ -1,7 +1,7 @@
 name: Integration
 
 on:
-  pull_requests:
+  pull_request:
     branches:
       - main
 
@@ -24,4 +24,3 @@ jobs:
         run: npm install
       - name: Run unit tests
         run: npm run tests
-        
