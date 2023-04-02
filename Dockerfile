@@ -10,4 +10,6 @@ COPY . .
 
 RUN npm run build
 
-CMD ["npm","run","start:prod"]
+EXPOSE 80
+
+CMD ["npm", "run", "start:prod"]

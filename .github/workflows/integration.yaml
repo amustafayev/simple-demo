@@ -1,27 +1,26 @@
 name: Integration
 
 on:
-  pull_requests:
+  pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
       - name: Install dependencies
-        run: npm install
+        run:  npm install
       - name: Build app
         run: npm run build
   unit-tests:
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
       - name: Install dependencies
-        run: npm install
+        run:  npm install
       - name: Run unit tests
-        run: npm run tests
-        
+        run: npm run test
